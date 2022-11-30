@@ -3,7 +3,7 @@ const express= require("express");
 const cors= require("cors");
 const app= express();
 
-const PORTUSED= process.env.PORTUSED;
+const PORTUSED= 8081;
 
 connectDb= require("./db/config");
 connectDb();
@@ -18,6 +18,5 @@ app.listen(PORTUSED, (error)=>{
     if(!error)
         console.log(`SERVER RUNNING ON PORT: http://localhost:${PORTUSED}`);
     else    
-        console.log("Server can't start")
-        
+        console.log("Server can't start");   
 });

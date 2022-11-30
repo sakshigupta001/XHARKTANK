@@ -5,8 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "restart": "nodemon server.js",
-    "start": "node server.js"
+    "restart": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.crio.do/COHORT_ME_BUILDOUT_XHARKTANK_ENROLL_1668411037975/crio-2021sakshig-ME_BUILDOUT_XHARKTANK.git"
   },
   "author": "",
   "license": "ISC",
@@ -14,7 +18,9 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "mongoose": "^6.7.2",
+    "mongoose": "^6.7.4"
+  },
+  "devDependencies": {
     "nodemon": "^2.0.20"
   }
 }
