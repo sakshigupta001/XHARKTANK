@@ -3,7 +3,7 @@
 # This script must contain a series of commands to run the backend application
 
 # # Eg:- For Node.js project;
-#          pm2 start index.js
+          pm2 start index.js
 
 # # Eg:- For SpringBoot Project;
 #         ./gradlew bootRun
