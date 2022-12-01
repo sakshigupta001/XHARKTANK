@@ -7,7 +7,7 @@ router.post("/", async (req,res)=>{
     const {entrepreneur,pitchTitle,pitchIdea, askAmount, equity}= req.body;
 
     //invalid request body
-    if(!entrepreneur || !pitchTitle || !pitchIdea || !askAmount || !equity || (equity>100))
+    if(!entrepreneur || !pitchTitle || !pitchIdea || !askAmount || !equity || (equity>100) || askAmount<=0)
         return res.status(400).send({error: "Invalid request body"});
 
     try
@@ -35,7 +35,7 @@ router.post("/:id/makeOffer", async (req,res)=>{
     const {investor, amount, equity, comment}= req.body;
 
     //invalid request body 
-    if(!investor || !amount || !equity || !comment || (equity>100))
+    if(!investor || !amount || !equity || (equity>100) || amount<=0)
         return res.status(400).send({error: "Invalid request body"});
     
     try{    
@@ -55,7 +55,7 @@ router.post("/:id/makeOffer", async (req,res)=>{
             offerOnPitch.comment= comment;
 
         //pushing offer to given pitch    
-        Pitches.updateOne({_id:req.params.id}, 
+        const updateStatus= Pitches.updateOne({_id:req.params.id}, 
         {$push: {offers: offerOnPitch}},
         function(error, success)
         {
@@ -64,6 +64,9 @@ router.post("/:id/makeOffer", async (req,res)=>{
             else
                 console.log("Pitch updated successfully",success);   
         });
+        if(!updateStatus)
+            return res.status(404).json({error:"Pitch Not found"});
+
 
         return res.status(201).json({id:req.params.id});
     }catch(err){
@@ -150,7 +153,7 @@ router.get("/:id", async (req,res)=>{
             offers: offersOnPitch
         });
     }catch(err){
-        return res.status(404).json({error:"Something went wrong"});
+        return res.status(400).json({error:"Something went wrong"});
     }
 });
 
