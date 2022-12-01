@@ -35,7 +35,7 @@ router.post("/:id/makeOffer", async (req,res)=>{
     const {investor, amount, equity, comment}= req.body;
 
     //invalid request body 
-    if(!investor || !amount || !equity || (equity>100))
+    if(!investor || !amount || !equity || !comment || (equity>100))
         return res.status(400).send({error: "Invalid request body"});
     
     try{    
