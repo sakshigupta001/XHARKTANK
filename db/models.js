@@ -1,19 +1,19 @@
 const mongoose= require("mongoose");
 
 const pitchOfferSchema= new mongoose.Schema({
-    id: {type: String},
-    investor: {type: String},
-    amount: {type: mongoose.Types.Decimal128},
-    equity: {type: mongoose.Types.Decimal128},
-    comment: {type: String}
+    id: {type: String, required:true},
+    investor: {type: String, required:true},
+    amount: {type: Number, required:true},
+    equity: {type: Number, required:true},
+    comment: {type: String, required:true}
 });
 const pitchSchema= new mongoose.Schema({
 
     entrepreneur: {type: String, required:true},
     pitchTitle: {type: String, required:true},
     pitchIdea: {type: String, required:true},
-    askAmount: {type: mongoose.Types.Decimal128, required:true},
-    equity: {type: mongoose.Types.Decimal128, required:true},
+    askAmount: {type: Number, required:true},
+    equity: {type: Number, required:true},
     offers: [pitchOfferSchema]
     },{
         versionKey: false

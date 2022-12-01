@@ -1,13 +1,21 @@
 const router = require("express").Router();
 const Pitches= require("../db/models");
 
+//to check if fields are valid or not
+function notValid(value)
+{
+    if(value==="" || value===null)
+       return true;
+    return false;   
+}
+
 //post a pitch
 router.post("/", async (req,res)=>{
 
     const {entrepreneur,pitchTitle,pitchIdea, askAmount, equity}= req.body;
 
     //invalid request body
-    if(!entrepreneur || !pitchTitle || !pitchIdea || !askAmount || !equity || (equity>100) || askAmount<=0)
+    if(notValid(entrepreneur) || notValid(pitchTitle) || notValid(pitchIdea) || notValid(askAmount) || notValid(equity) || (equity>100) || askAmount<=0)
         return res.status(400).send({error: "Invalid request body"});
 
     try
@@ -35,7 +43,7 @@ router.post("/:id/makeOffer", async (req,res)=>{
     const {investor, amount, equity, comment}= req.body;
 
     //invalid request body 
-    if(!investor || !amount || !equity || (equity>100) || amount<=0)
+    if(notValid(investor) || notValid(comment) || (equity>100) || amount<=0)
         return res.status(400).send({error: "Invalid request body"});
     
     try{    
