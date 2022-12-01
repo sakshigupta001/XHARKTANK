@@ -11,7 +11,7 @@ async function deleteCollection(){
     collections
       .map((collection) => collection.name)
       .forEach(async (collectionName) => {
-        if(collectionName=='pitches')
+        if(collectionName=='pitches' || collectionName=='offers')
             db.dropCollection(collectionName);
       });
 }

@@ -1,5 +1,6 @@
 const router = require("express").Router();
-const Pitches= require("../db/models");
+const pitchSchema= require("../db/pitchSchema");
+const offerSchema= require("../db/offerSchema");
 
 //to check if fields are valid or not
 function notValid(value)
@@ -20,7 +21,7 @@ router.post("/", async (req,res)=>{
 
     try
     {
-        const pitch= new Pitches({
+        const newpitch= await pitchSchema.create({
             entrepreneur: entrepreneur,
             pitchTitle: pitchTitle,
             pitchIdea: pitchIdea,
@@ -29,8 +30,7 @@ router.post("/", async (req,res)=>{
         });
 
         //pitch created successfully
-        const response= await pitch.save();
-        return res.status(201).json({id:response.id});
+        return res.status(201).json({id:newpitch._id});
     }catch(err){
         return res.status(400).send({ error: 'Something went wrong.'});
     }
@@ -48,22 +48,21 @@ router.post("/:id/makeOffer", async (req,res)=>{
     
     try{    
         //pitch not found
-        const pitch= await Pitches.findOne({_id:req.params.id});
-        if(!pitch)
-            return res.status(404).json({error:"Pitch Not found"});
+        // const pitch= await Pitches.findOne({_id:req.params.id});
+        // if(!pitch)
+        //     return res.status(404).json({error:"Pitch Not found"});
 
         //creating offer
-        const offerOnPitch= {
+        const offerOnPitch= await offerSchema.create({
             id: req.params.id,
             investor: investor,
             amount: amount,
-            equity: equity
-        };
-        if(comment)
-            offerOnPitch.comment= comment;
+            equity: equity,
+            comment: comment
+        });
 
         //pushing offer to given pitch    
-        const updateStatus= Pitches.updateOne({_id:req.params.id}, 
+        const updateStatus= pitchSchema.updateOne({_id:req.params.id}, 
         {$push: {offers: offerOnPitch}},
         function(error, success)
         {
@@ -76,7 +75,7 @@ router.post("/:id/makeOffer", async (req,res)=>{
             return res.status(404).json({error:"Pitch Not found"});
 
 
-        return res.status(201).json({id:req.params.id});
+        return res.status(201).json({id:offerOnPitch._id});
     }catch(err){
         return res.status(400).json({error:"Something went wrong",err});
     }
@@ -88,38 +87,58 @@ router.get("/", async (req,res)=>{
 
     try{
         //find  all pitches and sort them
-        const allpitches= await Pitches.find({}).sort({ 
-            $natural: -1 })
+        const allpitches= await pitchSchema.find().sort({ 
+            createdAt: -1 }).populate("offers");
 
-        const allpitchesArray= new Array(allpitches.length);
+        // const allpitchesArray= new Array(allpitches.length);
 
-        for(i=0; i<allpitches.length; i++)
-        {
-            let offersOnPitch= new Array();
-            const pitchInfo= {
-                id: allpitches[i]._id, 
-                entrepreneur: allpitches[i].entrepreneur,
-                pitchTitle: allpitches[i].pitchTitle,
-                pitchIdea: allpitches[i].pitchIdea,
-                askAmount: parseFloat(allpitches[i].askAmount), 
-                equity: parseFloat(allpitches[i].equity)
-            }//pitchInfo
-            for(j=0; j < allpitches[i].offers.length; j++)
-            {           
-                const offer={
-                    id:  allpitches[i]._id,
-                    investor:  allpitches[i].offers[j].investor,
-                    amount:  parseFloat(allpitches[i].offers[j].amount),
-                    equity:  parseFloat(allpitches[i].offers[j].equity),
-                    comment:  allpitches[i].offers[j].comment
-                }
-                 offersOnPitch.push(offer);
-            }//inner for loop  
-            pitchInfo.offers= offersOnPitch;
-            allpitchesArray[i]= pitchInfo;
-        }
+        // for(i=0; i<allpitches.length; i++)
+        // {
+        //     let offersOnPitch= new Array();
+        //     const pitchInfo= {
+        //         id: allpitches[i]._id, 
+        //         entrepreneur: allpitches[i].entrepreneur,
+        //         pitchTitle: allpitches[i].pitchTitle,
+        //         pitchIdea: allpitches[i].pitchIdea,
+        //         askAmount: parseFloat(allpitches[i].askAmount), 
+        //         equity: parseFloat(allpitches[i].equity)
+        //     }//pitchInfo
+        //     for(j=0; j < allpitches[i].offers.length; j++)
+        //     {           
+        //         const offer={
+        //             id:  allpitches[i]._id,
+        //             investor:  allpitches[i].offers[j].investor,
+        //             amount:  parseFloat(allpitches[i].offers[j].amount),
+        //             equity:  parseFloat(allpitches[i].offers[j].equity),
+        //             comment:  allpitches[i].offers[j].comment
+        //         }
+        //          offersOnPitch.push(offer);
+        //     }//inner for loop  
+        //     pitchInfo.offers= offersOnPitch;
+        //     allpitchesArray[i]= pitchInfo;
+        // }
 
-        return res.status(200).json(allpitchesArray);
+        const pitches= allpitches.map((pitch)=>{
+            const pitchob= {
+                id: pitch._id,
+                entrepreneur: pitch.entrepreneur,
+                pitchTitle: pitch.pitchTitle,
+                pitchIdea: pitch.pitchIdea,
+                askAmount: pitch.askAmount,
+                equity: pitch.equity,
+            };
+            pitchob.offers= pitch.offers.map((offer)=>{
+                return{
+                    id: req.params.id,
+                    investor: offer.investor,
+                    amount: offer.amount,
+                    equity: offer.equity,
+                    comment: offer.comment
+                };
+            });
+            return pitchob;
+        });
+        return res.status(200).json(pitches);
     }catch(err){
         return res.status(400).send({ error: 'Something went wrong.'});
     }
@@ -131,35 +150,57 @@ router.get("/:id", async (req,res)=>{
     
     try{
         //pitch not found
-        const pitch= await Pitches.findOne({_id:req.params.id});
+        const pitch= await pitchSchema.findById(req.params.id).populate("offers");
         if(!pitch)
             return res.status(404).json({error:"Pitch Not found"});
 
         //pitch found
-        const offersOnPitch= new Array();
+        // const offersOnPitch= new Array();
 
-        for(ind=0; ind < pitch.offers.length; ind++)
-        {           
-            const offer={
-            id:  req.params.id,
-            investor:  pitch.offers[ind].investor,
-            amount:  parseFloat(pitch.offers[ind].amount),
-            equity:  parseFloat(pitch.offers[ind].equity),
-            comment:  pitch.offers[ind].comment
-            }
-            offersOnPitch.push(offer);
-        }
+        // for(ind=0; ind < pitch.offers.length; ind++)
+        // {           
+        //     const offer={
+        //     id:  req.params.id,
+        //     investor:  pitch.offers[ind].investor,
+        //     amount:  parseFloat(pitch.offers[ind].amount),
+        //     equity:  parseFloat(pitch.offers[ind].equity),
+        //     comment:  pitch.offers[ind].comment
+        //     }
+        //     offersOnPitch.push(offer);
+        // }
 
-        //returning specific pitch
-        return res.status(200).json({
-            id: req.params.id, 
-            entrepreneur: pitch.entrepreneur,
-            pitchTitle: pitch.pitchTitle,
-            pitchIdea: pitch.pitchIdea,
-            askAmount: parseFloat(pitch.askAmount), 
-            equity: parseFloat(pitch.equity),
-            offers: offersOnPitch
+        // //returning specific pitch
+        // return res.status(200).json({
+        //     id: req.params.id, 
+        //     entrepreneur: pitch.entrepreneur,
+        //     pitchTitle: pitch.pitchTitle,
+        //     pitchIdea: pitch.pitchIdea,
+        //     askAmount: parseFloat(pitch.askAmount), 
+        //     equity: parseFloat(pitch.equity),
+        //     offers: offersOnPitch
+        // });
+        const pitchob= {
+            id: req.params.id,
+            entrepreneur: pitch._doc.entrepreneur,
+            pitchTitle: pitch._doc.pitchTitle,
+            pitchIdea: pitch._doc.pitchIdea,
+            askAmount: pitch._doc.askAmount,
+            equity: pitch._doc.equity,
+            offers: pitch._doc.offers
+        };
+
+        const offerob= pitch._doc.offers.map((offer)=>{
+            return{
+                id: offer._id,
+                investor: offer.investor,
+                amount: offer.amount,
+                equity: offer.equity,
+                comment: offer.comment
+            };
         });
+        pitchob.offers= offerob;
+        
+        return res.status(200).json(pitchob);
     }catch(err){
         return res.status(400).json({error:"Something went wrong"});
     }
