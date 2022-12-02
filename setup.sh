@@ -3,7 +3,7 @@
 # This script must contain a series of commands to set up dependencies of your project to make it work.
 
 # # Eg:- For Node.js project;
-          npm install
+          npm install body-parser cors dotenv express mongoose
 
 # # Eg:- For Java Gradle Project;
 #           chmod +x gradlew
