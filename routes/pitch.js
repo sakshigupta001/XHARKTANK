@@ -3,6 +3,8 @@ const Pitches= require("../db/models");
 //to check if fields are valid or not
 function notValid(value)
 {
+    if(typeof(value)==='string')
+       value= value.trim();
     if(value==="" || value===null)
        return true;
     return false;   
@@ -24,7 +26,7 @@ router.post("/", async (req,res)=>{
         });
         //pitch created successfully
         const response= await pitch.save();
-        return res.status(201).json({id:response.id});
+        return res.status(201).json({id:response._id});
     }catch(err){
         return res.status(400).send({ error: 'Something went wrong.'});
     }
