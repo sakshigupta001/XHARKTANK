@@ -1,7 +1,7 @@
 const mongoose= require("mongoose");
 
 const pitchOfferSchema= new mongoose.Schema({
-    id: {type: String, required:true},
+    
     investor: {type: String, required:true},
     amount: {type: Number, required:true},
     equity: {type: Number, required:true},
@@ -10,4 +10,8 @@ const pitchOfferSchema= new mongoose.Schema({
 {timestamps:true}
 );
 
-module.exports= mongoose.model("offers", pitchOfferSchema);
+const offerModel= mongoose.model("offer", pitchOfferSchema);
+offerModel.deleteMany({});  
+module.exports= offerModel;
+
+//id: {type: String, required:true},

@@ -1,5 +1,8 @@
 require('dotenv').config();
 const mongoose = require("mongoose");
+// const pitchModel= require("../db/pitchSchema");
+// const offerModel= require("../db/offerSchema");
+//const MONGO_CONNECTION_URL= "mongodb://localhost:27017/xharktank";
 
 async function deleteCollection(){
     const db = mongoose.connection.db;
@@ -25,6 +28,8 @@ function connectDB(){
 
         connection.once('open', function(){
             console.log("DATABASE CONNECTED");
+            // pitchModel.deleteMany({});
+            // offerModel.deleteMany({});
             deleteCollection();
         }).on('error', function(err){
             console.log("DATABASE CONNECTION FAILED");

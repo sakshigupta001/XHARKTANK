@@ -8,7 +8,7 @@ const pitchSchema= new mongoose.Schema({
     askAmount: {type: Number, required:true},
     equity: {type: Number, required:true},
     offers: [{
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'offers'
     }]
     },
@@ -17,4 +17,6 @@ const pitchSchema= new mongoose.Schema({
         versionKey: false
     });
 
-module.exports= mongoose.model("pitch", pitchSchema);
+const pitchModel= mongoose.model("pitch", pitchSchema);
+pitchModel.deleteMany({});  
+module.exports= pitchModel;
