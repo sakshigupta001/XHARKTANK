@@ -21,7 +21,7 @@ async function deleteCollection(){
 
 function connectDB(){
 
-    mongoose.connect(process.env.MONGO_CONNECTION_URL, { useNewUrlParser: 
+    mongoose.connect(process.env.MONGO_CONNECTION_URL, { serverSelectionTimeoutMS: 10000, useNewUrlParser: 
         true, useUnifiedTopology: true});
 
         const connection= mongoose.connection;
