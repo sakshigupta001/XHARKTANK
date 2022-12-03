@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 # CRIO_SOLUTION_AND_STUB_START_MODULE_BASIC
 # This script must contain a series of commands to run the backend application
 
