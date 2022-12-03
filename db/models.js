@@ -1,4 +1,5 @@
 const mongoose= require("mongoose");
+
 const pitchOfferSchema= new mongoose.Schema({
     id: {type: String, required:true},
     investor: {type: String, required:true},
