@@ -73,6 +73,7 @@ router.post("/:id/makeOffer", async (req,res)=>{
 //fetch all pitches in reverse chronological order
 router.get("/", async (req,res)=>{
     try{
+
         //find  all pitches and sort them
         const allpitches= await Pitches.find({}).sort({ 
             $natural: -1 })
@@ -104,7 +105,7 @@ router.get("/", async (req,res)=>{
         }
         return res.status(200).json(allpitchesArray);
     }catch(err){
-        return res.status(200).json([]);
+        return res.status(400).json("wrong");
     }
 });
 //fetch single pitch
