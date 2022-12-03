@@ -4,7 +4,7 @@
 
 # # Eg:- For Node.js project;
           npm install body-parser cors dotenv express mongoose pm2
-          service mongod start
+#          service mongod start
 
 # # Eg:- For Java Gradle Project;
 #           chmod +x gradlew
