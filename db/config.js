@@ -1,9 +1,10 @@
+require('dotenv').config();
 const mongoose = require("mongoose");
 const pitches= require("../db/models");
 
 function connectDB(){
 
-    mongoose.connect("mongodb://localhost:27017/xharktank", { serverSelectionTimeoutMS: 10000, connectTimeoutMS:10000, socketTimeoutMS:10000, useNewUrlParser: 
+    mongoose.connect(process.env.MONGO_URL, { serverSelectionTimeoutMS: 10000, connectTimeoutMS:10000, socketTimeoutMS:10000, useNewUrlParser: 
         true, useUnifiedTopology: true});
 
         const connection= mongoose.connection;

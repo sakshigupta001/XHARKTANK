@@ -46,6 +46,7 @@ Node.js 14, npm, MongoDB 4.2
     npm install mongoose
     npm install cors
     npm install body-parser
+    npm install dotenv
 ```
 * Run server
 ```bash
